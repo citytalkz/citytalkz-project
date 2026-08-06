@@ -1,0 +1,6 @@
+{
+  "name": "City Talkz",
+  "description": "Luxury digital magazine covering automotive, aviation, travel, watches, jewelry, fashion, hospitality, fine dining, spirits, business, and real estate.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
