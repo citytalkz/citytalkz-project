@@ -19,10 +19,10 @@ export const HomePage: React.FC = () => {
   // 3. Editor's Pick / Featured Article
   const featuredArticle = articles.find(a => a.isFeatured && !a.isHero) || articles[1] || articles[0];
 
-  // 4. Category Preview Rows: Automotive, Aviation & Travel, Watches & Jewelry
+  // 4. Category Preview Rows: Automotive, Aviation & Travel, Watches & Jewellery
   const automotiveArticles = articles.filter(a => a.category === 'automotive').slice(0, 3);
   const travelArticles = articles.filter(a => a.category === 'aviation-travel').slice(0, 3);
-  const watchesArticles = articles.filter(a => a.category === 'watches-jewelry').slice(0, 3);
+  const watchesArticles = articles.filter(a => a.category === 'watches-jewellery').slice(0, 3);
 
   const handleInnerCircleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,11 +34,11 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="space-y-16 sm:space-y-24 pb-12">
-      
+
       {/* 1. HERO SPLIT CONTAINER (Hero Slideshow on Left, The Journal Feed on Top Right) */}
       <section className="border-b border-[#e5e5e5] bg-white">
         <div className="w-full grid grid-cols-1 lg:grid-cols-12 min-h-[580px] lg:min-h-[650px]">
-          
+
           {/* HERO SLIDESHOW (LEFT - 68%) */}
           <div className="lg:col-span-8 border-b lg:border-b-0 lg:border-r border-[#e5e5e5] relative">
             <HeroSlideshow />
@@ -65,12 +65,12 @@ export const HomePage: React.FC = () => {
                 {topRightArticles.map((article) => {
                   const catMeta = getCategoryBySlug(article.category);
                   return (
-                    <article 
-                      key={article.id} 
+                    <article
+                      key={article.id}
                       onClick={() => navigate(`/article/${article.slug}`)}
                       className="flex space-x-4 items-start group cursor-pointer"
                     >
-                      <div 
+                      <div
                         className="w-20 h-20 sm:w-22 sm:h-22 bg-gray-100 flex-shrink-0 bg-cover bg-center border border-[#e5e5e5] group-hover:border-[#c9a227] transition-colors"
                         style={{ backgroundImage: `url('${article.coverImage}')` }}
                       />
@@ -100,17 +100,17 @@ export const HomePage: React.FC = () => {
                 </p>
                 <form onSubmit={handleInnerCircleSubmit} className="space-y-3 pt-1">
                   <div className="relative">
-                    <input 
-                      type="email" 
+                    <input
+                      type="email"
                       required
                       value={emailInput}
                       onChange={(e) => setEmailInput(e.target.value)}
-                      placeholder="Email Address" 
+                      placeholder="Email Address"
                       className="w-full bg-white border-b border-black/20 py-2 px-3 text-xs focus:outline-none focus:border-[#c9a227] font-sans text-[#111111] placeholder-[#888888]"
                     />
                   </div>
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     className="w-full bg-[#111111] hover:bg-[#c9a227] text-white hover:text-black py-2.5 text-[10px] font-bold uppercase tracking-widest transition-colors cursor-pointer"
                   >
                     Join the Inner Circle
@@ -244,7 +244,7 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* 7. CATEGORY PREVIEW ROW 3: WATCHES & JEWELRY */}
+      {/* 7. CATEGORY PREVIEW ROW 3: WATCHES & JEWELLERY */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between border-b border-[#e5e5e5] pb-4 mb-8">
           <div>
@@ -252,12 +252,12 @@ export const HomePage: React.FC = () => {
               High Horology
             </span>
             <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#111111]">
-              Watches & Jewelry
+              Watches & Jewellery
             </h3>
           </div>
 
           <button
-            onClick={() => navigate('/watches-jewelry')}
+            onClick={() => navigate('/watches-jewellery')}
             className="text-xs font-semibold uppercase tracking-widest text-[#c9a227] hover:text-[#111] transition-colors flex items-center gap-1"
           >
             <span>View All</span>

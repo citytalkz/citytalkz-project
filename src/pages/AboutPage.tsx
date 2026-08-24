@@ -99,7 +99,7 @@ export const AboutPage: React.FC = () => {
                 HD
               </div>
               <div>
-                <h4 className="font-serif font-bold text-[#111111] text-base">Horology & Fine Jewelry Bureau</h4>
+                <h4 className="font-serif font-bold text-[#111111] text-base">Horology & Fine Jewellery Bureau</h4>
                 <p className="text-xs text-[#c9a227] font-mono uppercase">High Horology Desk</p>
                 <p className="text-[11px] text-[#666666] pt-1">Geneva Atelier Press Desk</p>
               </div>

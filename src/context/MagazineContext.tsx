@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Article, CategorySlug, Comment } from '../types';
-import { SAMPLE_ARTICLES } from '../data/sampleArticles';
+import { Article, CategorySlug, Comment, Author } from '../types';
+import { supabase } from '../lib/supabase';
 
 interface Toast {
   id: string;
@@ -10,45 +10,46 @@ interface Toast {
 
 interface MagazineContextType {
   articles: Article[];
+  isLoadingArticles: boolean;
   savedArticleIds: string[];
   comments: Record<string, Comment[]>;
   currentPath: string;
   navigate: (path: string) => void;
-  
+
   // Admin Authentication
   isAdminLoggedIn: boolean;
-  adminLogin: (u: string, p: string) => boolean;
-  adminLogout: () => void;
-  updateAdminPassword: (oldP: string, newP: string) => boolean;
-  
+  adminLogin: (u: string, p: string) => Promise<boolean>;
+  adminLogout: () => Promise<void>;
+  updateAdminPassword: (oldP: string, newP: string) => Promise<boolean>;
+
   // Search state
   isSearchOpen: boolean;
   openSearch: () => void;
   closeSearch: () => void;
-  
+
   // Saved Articles Drawer
   isSavedDrawerOpen: boolean;
   toggleSavedDrawer: () => void;
-  
+
   // CMS Modal (For Admin)
   isCMSOpen: boolean;
   editingArticle: Article | null;
   openCMS: (articleToEdit?: Article | null) => void;
   closeCMS: () => void;
-  
+
   // Article Actions
-  addArticle: (newArticle: Omit<Article, 'id' | 'viewsCount' | 'publishDate'>) => void;
-  updateArticle: (updatedArticle: Article) => void;
-  deleteArticle: (id: string) => void;
-  resetArticlesToDefault: () => void;
-  
+  addArticle: (newArticle: Omit<Article, 'id' | 'viewsCount' | 'publishDate'>) => Promise<void>;
+  updateArticle: (updatedArticle: Article) => Promise<void>;
+  deleteArticle: (id: string) => Promise<void>;
+  resetArticlesToDefault: () => Promise<void>;
+
   // Bookmark Actions
   toggleBookmark: (articleId: string) => void;
   isBookmarked: (articleId: string) => boolean;
-  
+
   // Comment Actions
   addComment: (articleId: string, authorName: string, content: string) => void;
-  
+
   // Toast notifications
   toasts: Toast[];
   addToast: (message: string, type?: 'success' | 'info' | 'error') => void;
@@ -57,89 +58,169 @@ interface MagazineContextType {
 
 const MagazineContext = createContext<MagazineContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_ARTICLES_KEY = 'citytalkz_articles_v2';
 const LOCAL_STORAGE_SAVED_KEY = 'citytalkz_saved_articles_v1';
 const LOCAL_STORAGE_COMMENTS_KEY = 'citytalkz_comments_v1';
-const LOCAL_STORAGE_ADMIN_AUTH_KEY = 'citytalkz_admin_auth_v1';
-const LOCAL_STORAGE_ADMIN_CREDS_KEY = 'citytalkz_admin_creds_v3';
 
-const DEFAULT_ADMIN_CREDS = { username: 'citytalkz', password: 'City@talkz11' };
+// Maps the username typed on the website's Admin login form
+// to the real email registered in Supabase Auth.
+const ADMIN_USERNAME_TO_EMAIL: Record<string, string> = {
+  citytalkz: 'citytalkz11@gmail.com',
+};
+
+// ---- Supabase <-> Article mapping helpers ----
+
+function mapRowToArticle(row: any): Article {
+  const author: Author = {
+    name: row.author_name,
+    role: row.author_role,
+    avatar: row.author_avatar,
+  };
+
+  return {
+    id: row.id,
+    title: row.title,
+    slug: row.slug,
+    category: row.category as CategorySlug,
+    coverImage: row.cover_image,
+    author,
+    publishDate: row.publish_date,
+    excerpt: row.excerpt,
+    bodyContent: row.body_content,
+    readTime: row.read_time,
+    isFeatured: row.is_featured ?? false,
+    isHero: row.is_hero ?? false,
+    tags: row.tags ?? [],
+    viewsCount: row.views_count ?? 0,
+  };
+}
+
+function mapArticleToRow(article: Partial<Article>) {
+  return {
+    title: article.title,
+    slug: article.slug,
+    category: article.category,
+    cover_image: article.coverImage,
+    author_name: article.author?.name,
+    author_role: article.author?.role,
+    author_avatar: article.author?.avatar,
+    publish_date: article.publishDate,
+    excerpt: article.excerpt,
+    body_content: article.bodyContent,
+    read_time: article.readTime,
+    is_featured: article.isFeatured ?? false,
+    is_hero: article.isHero ?? false,
+    tags: article.tags ?? [],
+    views_count: article.viewsCount ?? 0,
+    is_published: true,
+  };
+}
 
 export const MagazineProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Admin Auth & Credentials State
-  const [adminCreds, setAdminCreds] = useState<{ username: string; password: string}>(() => {
-    try {
-      const stored = localStorage.getItem(LOCAL_STORAGE_ADMIN_CREDS_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed && parsed.username !== 'admin' && parsed.username !== 'citytlakz' && parsed.password !== 'password123') {
-          return parsed;
-        }
-      }
-    } catch {
-      // fallback
-    }
-    return DEFAULT_ADMIN_CREDS;
-  });
+  // ---- Admin Auth now backed by real Supabase Auth ----
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(false);
+  const [isAuthChecked, setIsAuthChecked] = useState<boolean>(false);
 
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem(LOCAL_STORAGE_ADMIN_AUTH_KEY) === 'true';
-    } catch {
+  useEffect(() => {
+    // On app load, check if a Supabase session already exists (e.g. after page refresh)
+    supabase.auth.getSession().then(({ data }) => {
+      setIsAdminLoggedIn(!!data.session);
+      setIsAuthChecked(true);
+    });
+
+    // Keep in sync if the session changes (e.g. token expiry, logout in another tab)
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAdminLoggedIn(!!session);
+    });
+
+    return () => {
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const adminLogin = async (u: string, p: string): Promise<boolean> => {
+    const typedUsername = u.trim().toLowerCase();
+    const email = ADMIN_USERNAME_TO_EMAIL[typedUsername] ?? typedUsername;
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password: p,
+    });
+
+    if (error || !data.session) {
+      console.error('Admin login failed', error);
       return false;
     }
-  });
 
-  const adminLogin = (u: string, p: string): boolean => {
-    if (
-      u.trim().toLowerCase() === adminCreds.username.toLowerCase() &&
-      p === adminCreds.password
-    ) {
-      setIsAdminLoggedIn(true);
-      try {
-        localStorage.setItem(LOCAL_STORAGE_ADMIN_AUTH_KEY, 'true');
-      } catch (e) {
-        console.error(e);
-      }
-      return true;
-    }
-    return false;
+    setIsAdminLoggedIn(true);
+    return true;
   };
 
-  const adminLogout = () => {
+  const adminLogout = async () => {
+    await supabase.auth.signOut();
     setIsAdminLoggedIn(false);
-    try {
-      localStorage.removeItem(LOCAL_STORAGE_ADMIN_AUTH_KEY);
-    } catch (e) {
-      console.error(e);
-    }
   };
 
-  const updateAdminPassword = (oldP: string, newP: string): boolean => {
-    if (oldP === adminCreds.password && newP.trim().length >= 4) {
-      const updated = { ...adminCreds, password: newP };
-      setAdminCreds(updated);
-      try {
-        localStorage.setItem(LOCAL_STORAGE_ADMIN_CREDS_KEY, JSON.stringify(updated));
-      } catch (e) {
-        console.error(e);
-      }
-      return true;
+  // Password changes now go through Supabase Auth directly.
+  // Note: Supabase's updateUser does not require the old password to be re-verified
+  // client-side; it trusts the current authenticated session.
+  const updateAdminPassword = async (oldP: string, newP: string): Promise<boolean> => {
+    if (newP.trim().length < 4) {
+      return false;
     }
-    return false;
+
+    const { data: sessionData } = await supabase.auth.getSession();
+    const email = sessionData.session?.user?.email;
+
+    if (!email) {
+      return false;
+    }
+
+    // Re-verify old password by attempting a sign-in with it first
+    const { error: verifyError } = await supabase.auth.signInWithPassword({
+      email,
+      password: oldP,
+    });
+
+    if (verifyError) {
+      return false;
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({ password: newP });
+
+    if (updateError) {
+      console.error('Failed to update admin password', updateError);
+      return false;
+    }
+
+    return true;
   };
 
-  const [articles, setArticles] = useState<Article[]>(() => {
-    try {
-      const stored = localStorage.getItem(LOCAL_STORAGE_ARTICLES_KEY);
-      if (stored) {
-        return JSON.parse(stored);
-      }
-    } catch (e) {
-      console.error('Failed to load articles from localStorage', e);
+  // ---- Articles now come from Supabase ----
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [isLoadingArticles, setIsLoadingArticles] = useState<boolean>(true);
+
+  const fetchArticles = async () => {
+    setIsLoadingArticles(true);
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .order('published_at', { ascending: false });
+
+    if (error) {
+      console.error('Failed to fetch articles from Supabase', error);
+      addToast('Failed to load articles', 'error');
+      setIsLoadingArticles(false);
+      return;
     }
-    return SAMPLE_ARTICLES;
-  });
+
+    setArticles((data ?? []).map(mapRowToArticle));
+    setIsLoadingArticles(false);
+  };
+
+  useEffect(() => {
+    fetchArticles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [savedArticleIds, setSavedArticleIds] = useState<string[]>(() => {
     try {
@@ -179,15 +260,6 @@ export const MagazineProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [isCMSOpen, setIsCMSOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<Article | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
-
-  // Sync articles to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_ARTICLES_KEY, JSON.stringify(articles));
-    } catch (e) {
-      console.error('Failed to save articles to localStorage', e);
-    }
-  }, [articles]);
 
   // Sync saved articles to localStorage
   useEffect(() => {
@@ -250,34 +322,72 @@ export const MagazineProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setIsCMSOpen(false);
   };
 
-  const addArticle = (newArticleData: Omit<Article, 'id' | 'viewsCount' | 'publishDate'>) => {
+  // ---- Article Actions write through to Supabase, now under real auth ----
+
+  const addArticle = async (newArticleData: Omit<Article, 'id' | 'viewsCount' | 'publishDate'>) => {
     const id = `art-custom-${Date.now()}`;
     const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    const created: Article = {
-      ...newArticleData,
+
+    const row = {
       id,
-      publishDate: today,
-      viewsCount: 100
+      ...mapArticleToRow({ ...newArticleData, publishDate: today, viewsCount: 100 }),
+      published_at: new Date().toISOString(),
     };
 
+    const { data, error } = await supabase
+      .from('articles')
+      .insert(row)
+      .select()
+      .single();
+
+    if (error || !data) {
+      console.error('Failed to add article', error);
+      addToast('Failed to publish article', 'error');
+      return;
+    }
+
+    const created = mapRowToArticle(data);
     setArticles(prev => [created, ...prev]);
     addToast(`Published: "${created.title.slice(0, 35)}..."`, 'success');
   };
 
-  const updateArticle = (updatedArticle: Article) => {
-    setArticles(prev => prev.map(a => a.id === updatedArticle.id ? updatedArticle : a));
-    addToast(`Updated article: "${updatedArticle.title.slice(0, 35)}..."`, 'success');
+  const updateArticle = async (updatedArticle: Article) => {
+    const row = mapArticleToRow(updatedArticle);
+
+    const { data, error } = await supabase
+      .from('articles')
+      .update(row)
+      .eq('id', updatedArticle.id)
+      .select()
+      .single();
+
+    if (error || !data) {
+      console.error('Failed to update article', error);
+      addToast('Failed to update article', 'error');
+      return;
+    }
+
+    const updated = mapRowToArticle(data);
+    setArticles(prev => prev.map(a => (a.id === updated.id ? updated : a)));
+    addToast(`Updated article: "${updated.title.slice(0, 35)}..."`, 'success');
   };
 
-  const deleteArticle = (id: string) => {
+  const deleteArticle = async (id: string) => {
+    const { error } = await supabase.from('articles').delete().eq('id', id);
+
+    if (error) {
+      console.error('Failed to delete article', error);
+      addToast('Failed to delete article', 'error');
+      return;
+    }
+
     setArticles(prev => prev.filter(a => a.id !== id));
     addToast('Article removed', 'info');
   };
 
-  const resetArticlesToDefault = () => {
-    setArticles(SAMPLE_ARTICLES);
-    localStorage.removeItem(LOCAL_STORAGE_ARTICLES_KEY);
-    addToast('CMS data reset to 30 sample articles', 'info');
+  const resetArticlesToDefault = async () => {
+    await fetchArticles();
+    addToast('Articles refreshed from database', 'info');
   };
 
   const toggleBookmark = (articleId: string) => {
@@ -317,6 +427,7 @@ export const MagazineProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     <MagazineContext.Provider
       value={{
         articles,
+        isLoadingArticles,
         savedArticleIds,
         comments,
         currentPath,

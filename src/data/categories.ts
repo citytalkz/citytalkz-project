@@ -16,9 +16,9 @@ export const CATEGORIES: CategoryInfo[] = [
     coverImage: 'https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?q=80&w=1600&auto=format&fit=crop'
   },
   {
-    slug: 'watches-jewelry',
-    name: 'Watches & Jewelry',
-    shortName: 'Watches & Jewelry',
+    slug: 'watches-jewellery',
+    name: 'Watches & Jewellery',
+    shortName: 'Watches & Jewellery',
     description: 'High horology, grand complications, museum-grade gems, and bespoke artisan jeweler showcases.',
     coverImage: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop'
   },

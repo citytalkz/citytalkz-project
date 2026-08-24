@@ -34,7 +34,7 @@ const AppContent: React.FC = () => {
 
     if (currentPath === '/automotive') return <CategoryHubPage categorySlug="automotive" />;
     if (currentPath === '/aviation-travel') return <CategoryHubPage categorySlug="aviation-travel" />;
-    if (currentPath === '/watches-jewelry') return <CategoryHubPage categorySlug="watches-jewelry" />;
+    if (currentPath === '/watches-jewellery') return <CategoryHubPage categorySlug="watches-jewellery" />;
     if (currentPath === '/fashion-style') return <CategoryHubPage categorySlug="fashion-style" />;
     if (currentPath === '/hospitality-hotels') return <CategoryHubPage categorySlug="hospitality-hotels" />;
     if (currentPath === '/fine-dining-spirits') return <CategoryHubPage categorySlug="fine-dining-spirits" />;

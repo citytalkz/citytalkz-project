@@ -1,7 +1,7 @@
-export type CategorySlug = 
+export type CategorySlug =
   | 'automotive'
   | 'aviation-travel'
-  | 'watches-jewelry'
+  | 'watches-jewellery'
   | 'fashion-style'
   | 'hospitality-hotels'
   | 'fine-dining-spirits'

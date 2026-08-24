@@ -22,10 +22,10 @@ export const Footer: React.FC = () => {
   return (
     <footer className="bg-[#fafafa] text-[#555555] border-t border-[#e5e5e5] pt-16 pb-12 font-sans">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Top Brand Statement & Newsletter Row */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-16 border-b border-[#e5e5e5]">
-          
+
           <div className="lg:col-span-6 space-y-4">
             <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
               <span className="font-serif text-3xl font-black tracking-[0.15em] text-[#111111] uppercase">
@@ -68,7 +68,7 @@ export const Footer: React.FC = () => {
                 Receive private invitations, off-market real estate previews, and exclusive editorial analysis.
               </p>
             </div>
-            
+
             <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-2">
               <div className="relative flex-1">
                 <Mail className="w-4 h-4 text-[#888] absolute left-3 top-1/2 -translate-y-1/2" />
@@ -94,7 +94,7 @@ export const Footer: React.FC = () => {
 
         {/* Categorized Navigation Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 py-12 border-b border-[#e5e5e5] text-xs">
-          
+
           <div>
             <h5 className="font-serif text-sm font-bold text-[#111111] uppercase tracking-wider mb-4 border-b border-[#e5e5e5] pb-2">
               Editorial Coverage
@@ -102,8 +102,8 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2.5 text-[#555555]">
               {CATEGORIES.slice(0, 4).map(cat => (
                 <li key={cat.slug}>
-                  <button 
-                    onClick={() => navigate(`/${cat.slug}`)} 
+                  <button
+                    onClick={() => navigate(`/${cat.slug}`)}
                     className="hover:text-[#c9a227] transition-colors"
                   >
                     {cat.name}
@@ -120,8 +120,8 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2.5 text-[#555555]">
               {CATEGORIES.slice(4).map(cat => (
                 <li key={cat.slug}>
-                  <button 
-                    onClick={() => navigate(`/${cat.slug}`)} 
+                  <button
+                    onClick={() => navigate(`/${cat.slug}`)}
                     className="hover:text-[#c9a227] transition-colors"
                   >
                     {cat.name}
@@ -147,7 +147,7 @@ export const Footer: React.FC = () => {
                 </button>
               </li>
               <li>
-                <button onClick={() => navigate('/journal/watches-jewelry')} className="hover:text-[#c9a227] transition-colors">
+                <button onClick={() => navigate('/journal/watches-jewellery')} className="hover:text-[#c9a227] transition-colors">
                   Grand Complications
                 </button>
               </li>
@@ -232,8 +232,8 @@ export const Footer: React.FC = () => {
               <p className="text-[#111111] font-semibold mb-1">Legal & Staff</p>
               <p className="text-[9px] leading-relaxed text-[#666666] flex flex-col space-y-1">
                 <span>Privacy / Terms</span>
-                <button 
-                  onClick={() => navigate('/admin')} 
+                <button
+                  onClick={() => navigate('/admin')}
                   className="text-left text-[#c9a227] hover:underline font-semibold tracking-wider"
                 >
                   Admin Login
@@ -249,7 +249,7 @@ export const Footer: React.FC = () => {
             <p className="text-[8px] text-[#737373] uppercase tracking-widest">
               © {new Date().getFullYear()} Luxury Media Collective. All Rights Reserved.
             </p>
-            <button 
+            <button
               onClick={scrollToTop}
               className="flex items-center gap-1 text-[#c9a227] hover:text-[#111] transition-colors uppercase font-mono text-[9px] tracking-widest mt-2"
             >

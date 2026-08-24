@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { 
-  Lock, 
-  User, 
-  Key, 
-  LogOut, 
-  ShieldCheck, 
-  Plus, 
-  Edit3, 
-  Trash2, 
-  RefreshCw, 
-  Sparkles, 
-  Eye, 
-  FileText, 
-  CheckCircle2, 
+import {
+  Lock,
+  User,
+  Key,
+  LogOut,
+  ShieldCheck,
+  Plus,
+  Edit3,
+  Trash2,
+  RefreshCw,
+  Sparkles,
+  Eye,
+  FileText,
+  CheckCircle2,
   AlertCircle,
   ExternalLink,
   KeyRound
@@ -33,15 +33,15 @@ const PRESET_LUXURY_IMAGES = [
 ];
 
 export const AdminPage: React.FC = () => {
-  const { 
-    isAdminLoggedIn, 
-    adminLogin, 
-    adminLogout, 
+  const {
+    isAdminLoggedIn,
+    adminLogin,
+    adminLogout,
     updateAdminPassword,
-    articles, 
-    addArticle, 
-    updateArticle, 
-    deleteArticle, 
+    articles,
+    addArticle,
+    updateArticle,
+    deleteArticle,
     resetArticlesToDefault,
     comments,
     navigate,
@@ -77,7 +77,7 @@ export const AdminPage: React.FC = () => {
   const [newPassword, setNewPassword] = useState('');
   const [securityMsg, setSecurityMsg] = useState('');
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
     if (!usernameInput.trim() || !passwordInput) {
@@ -85,7 +85,7 @@ export const AdminPage: React.FC = () => {
       return;
     }
 
-    const success = adminLogin(usernameInput, passwordInput);
+    const success = await adminLogin(usernameInput, passwordInput);
     if (success) {
       addToast('Welcome back to City Talkz Editorial CMS', 'success');
       setUsernameInput('');
@@ -171,10 +171,10 @@ export const AdminPage: React.FC = () => {
     resetArticleForm();
   };
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setSecurityMsg('');
-    const ok = updateAdminPassword(oldPassword, newPassword);
+    const ok = await updateAdminPassword(oldPassword, newPassword);
     if (ok) {
       setSecurityMsg('Password successfully updated!');
       setOldPassword('');
@@ -188,7 +188,7 @@ export const AdminPage: React.FC = () => {
   // Filtered articles for manage view
   const filteredArticles = articles.filter(a => {
     const matchesCat = filterCategory === 'all' || a.category === filterCategory;
-    const matchesSearch = 
+    const matchesSearch =
       a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
       a.author.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -202,7 +202,7 @@ export const AdminPage: React.FC = () => {
     return (
       <div className="min-h-[85vh] bg-[#0d0d0d] text-white flex items-center justify-center p-4 sm:p-6 font-sans">
         <div className="w-full max-w-md bg-[#141414] border border-[#2a2a2a] shadow-2xl p-6 sm:p-8 space-y-6 relative overflow-hidden">
-          
+
           {/* Top Gold Accent Line */}
           <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-[#967713] via-[#c9a227] to-[#e6c86e]"></div>
 
@@ -285,11 +285,11 @@ export const AdminPage: React.FC = () => {
   // Authenticated Admin CMS Dashboard View
   return (
     <div className="min-h-screen bg-[#f8f9fa] text-[#171717] font-sans pb-16">
-      
+
       {/* Top Admin Status Bar */}
       <div className="bg-[#0f0f0f] text-white border-b border-[#262626] py-3.5 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          
+
           <div className="flex items-center space-x-3">
             <span className="font-serif text-lg font-bold tracking-widest uppercase text-[#c9a227]">
               CITY TALKZ <span className="text-white">.</span> CMS
@@ -324,7 +324,7 @@ export const AdminPage: React.FC = () => {
 
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-8">
-        
+
         {/* Metric Cards Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white border border-[#e5e5e5] p-5 shadow-sm space-y-1">
@@ -362,7 +362,7 @@ export const AdminPage: React.FC = () => {
 
         {/* Dashboard Tabs & Content Area */}
         <div className="bg-white border border-[#e5e5e5] shadow-sm overflow-hidden">
-          
+
           {/* Tab Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-[#fafafa] border-b border-[#e5e5e5] px-6 text-xs font-sans">
             <div className="flex items-center space-x-6 overflow-x-auto">
@@ -371,9 +371,8 @@ export const AdminPage: React.FC = () => {
                   if (activeTab !== 'create') resetArticleForm();
                   setActiveTab('create');
                 }}
-                className={`py-4 font-semibold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-                  activeTab === 'create' ? 'border-[#c9a227] text-[#c9a227]' : 'border-transparent text-[#666] hover:text-[#111]'
-                }`}
+                className={`py-4 font-semibold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'create' ? 'border-[#c9a227] text-[#c9a227]' : 'border-transparent text-[#666] hover:text-[#111]'
+                  }`}
               >
                 <Plus className="w-4 h-4" />
                 <span>{editingArticleId ? 'Edit Article' : 'Publish New Article'}</span>
@@ -381,9 +380,8 @@ export const AdminPage: React.FC = () => {
 
               <button
                 onClick={() => setActiveTab('manage')}
-                className={`py-4 font-semibold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-                  activeTab === 'manage' ? 'border-[#c9a227] text-[#c9a227]' : 'border-transparent text-[#666] hover:text-[#111]'
-                }`}
+                className={`py-4 font-semibold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'manage' ? 'border-[#c9a227] text-[#c9a227]' : 'border-transparent text-[#666] hover:text-[#111]'
+                  }`}
               >
                 <FileText className="w-4 h-4" />
                 <span>Manage Articles ({articles.length})</span>
@@ -391,9 +389,8 @@ export const AdminPage: React.FC = () => {
 
               <button
                 onClick={() => setActiveTab('security')}
-                className={`py-4 font-semibold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-                  activeTab === 'security' ? 'border-[#c9a227] text-[#c9a227]' : 'border-transparent text-[#666] hover:text-[#111]'
-                }`}
+                className={`py-4 font-semibold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${activeTab === 'security' ? 'border-[#c9a227] text-[#c9a227]' : 'border-transparent text-[#666] hover:text-[#111]'
+                  }`}
               >
                 <KeyRound className="w-4 h-4" />
                 <span>Security & Credentials</span>
@@ -412,7 +409,7 @@ export const AdminPage: React.FC = () => {
 
           {/* Tab Body */}
           <div className="p-6 sm:p-8">
-            
+
             {/* Tab 1: Create / Edit Article */}
             {activeTab === 'create' && (
               <form onSubmit={handleArticleSubmit} className="space-y-6 max-w-4xl mx-auto">
@@ -437,7 +434,7 @@ export const AdminPage: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-                  
+
                   {/* Title */}
                   <div className="md:col-span-8 space-y-2">
                     <label className="text-xs uppercase tracking-wider text-[#555] font-semibold">
@@ -479,7 +476,7 @@ export const AdminPage: React.FC = () => {
                     <span>Cover Image URL *</span>
                     <span className="text-[10px] text-[#737373]">Select a high-res preset or enter image URL</span>
                   </label>
-                  
+
                   <input
                     type="url"
                     required
@@ -494,9 +491,8 @@ export const AdminPage: React.FC = () => {
                         key={idx}
                         type="button"
                         onClick={() => setCoverImage(preset.url)}
-                        className={`relative aspect-video border overflow-hidden transition-all ${
-                          coverImage === preset.url ? 'border-[#c9a227] ring-2 ring-[#c9a227]' : 'border-[#e5e5e5] opacity-70 hover:opacity-100'
-                        }`}
+                        className={`relative aspect-video border overflow-hidden transition-all ${coverImage === preset.url ? 'border-[#c9a227] ring-2 ring-[#c9a227]' : 'border-[#e5e5e5] opacity-70 hover:opacity-100'
+                          }`}
                       >
                         <img src={preset.url} alt={preset.label} className="w-full h-full object-cover" />
                         <span className="absolute bottom-0 inset-x-0 bg-black/80 text-[8px] text-white text-center py-0.5 font-sans truncate">
@@ -616,7 +612,7 @@ export const AdminPage: React.FC = () => {
             {/* Tab 2: Manage Articles */}
             {activeTab === 'manage' && (
               <div className="space-y-6">
-                
+
                 {/* Search & Filter Bar */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-[#e5e5e5]">
                   <input
@@ -652,7 +648,7 @@ export const AdminPage: React.FC = () => {
                   ) : (
                     filteredArticles.map(article => (
                       <div key={article.id} className="p-4 bg-white hover:bg-[#fcfcfc] flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors">
-                        
+
                         <div className="flex items-center space-x-4 overflow-hidden">
                           <img
                             src={article.coverImage}
@@ -668,7 +664,7 @@ export const AdminPage: React.FC = () => {
                                 </span>
                               )}
                             </div>
-                            <h4 
+                            <h4
                               onClick={() => navigate(`/article/${article.slug}`)}
                               className="font-serif text-sm font-bold text-[#111] truncate cursor-pointer hover:text-[#c9a227]"
                             >
@@ -721,9 +717,8 @@ export const AdminPage: React.FC = () => {
                 </div>
 
                 {securityMsg && (
-                  <div className={`p-3 text-xs border rounded ${
-                    securityMsg.includes('successfully') ? 'bg-green-50 text-green-800 border-green-200' : 'bg-red-50 text-red-800 border-red-200'
-                  }`}>
+                  <div className={`p-3 text-xs border rounded ${securityMsg.includes('successfully') ? 'bg-green-50 text-green-800 border-green-200' : 'bg-red-50 text-red-800 border-red-200'
+                    }`}>
                     {securityMsg}
                   </div>
                 )}

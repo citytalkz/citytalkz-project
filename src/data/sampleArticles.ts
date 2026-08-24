@@ -21,8 +21,8 @@ export const HERO_SLIDES: HeroSlide[] = [
   },
   {
     id: 'hero-omega',
-    category: 'watches-jewelry',
-    categoryName: 'Watches & Fine Jewelry',
+    category: 'watches-jewellery',
+    categoryName: 'Watches & Fine Jewellery',
     title: 'Omega Speedmaster & Seamaster Ultra Deep: Swiss High Horology Meets Abyssal Ocean Mastery',
     subtitle: 'Exploring the anti-magnetic 15,000 Gauss Co-Axial Master Chronometer caliber 3861, Moonwatch legacy, and 6,000-meter titanium deep-sea engineering.',
     coverImage: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=2000&auto=format&fit=crop',
@@ -111,11 +111,11 @@ The finale look—a sculpted champagne gold skirt with sheer lattice corset and 
     id: 'art-omega-watches-horology',
     title: 'The Omega Speedmaster & Seamaster Ultra Deep: Swiss Precision Meets Abyssal Ocean Mastery',
     slug: 'omega-watches-speedmaster-seamaster-horology-review',
-    category: 'watches-jewelry',
+    category: 'watches-jewellery',
     coverImage: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1600&auto=format&fit=crop',
     author: {
       name: 'CITY TALKZ Editorial Bureau',
-      role: 'Horology & Fine Jewelry Press Desk',
+      role: 'Horology & Fine Jewellery Press Desk',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop'
     },
     publishDate: 'August 3, 2026',
@@ -323,16 +323,16 @@ Voyaging through Raja Ampat—home to 75% of the world's coral species—guests 
     viewsCount: 7800
   },
 
-  // --- WATCHES & JEWELRY ---
+  // --- WATCHES & JEWELLERY ---
   {
     id: 'art-wj-1',
     title: 'Patek Philippe Grand Complication Ref. 6300G: Inside the Secret Geneva Atelier',
     slug: 'patek-philippe-grand-complication-behind-the-scenes',
-    category: 'watches-jewelry',
+    category: 'watches-jewellery',
     coverImage: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=1600&auto=format&fit=crop',
     author: {
       name: 'CITY TALKZ Editorial Bureau',
-      role: 'Horology & High Jewelry Press Desk',
+      role: 'Horology & High Jewellery Press Desk',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop'
     },
     publishDate: 'July 31, 2026',
@@ -352,13 +352,13 @@ The reversible white gold case, adorned with a hand-guilloché hobnail pattern, 
   },
   {
     id: 'art-wj-2',
-    title: 'The Rediscovery of Golconda Diamonds: Cartier’s High Jewelry Exhibition in Paris',
+    title: 'The Rediscovery of Golconda Diamonds: Cartier’s High Jewellery Exhibition in Paris',
     slug: 'cartier-golconda-diamonds-paris-exhibition',
-    category: 'watches-jewelry',
+    category: 'watches-jewellery',
     coverImage: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=1600&auto=format&fit=crop',
     author: {
       name: 'CITY TALKZ Editorial Bureau',
-      role: 'Horology & High Jewelry Press Desk',
+      role: 'Horology & High Jewellery Press Desk',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop'
     },
     publishDate: 'July 22, 2026',
@@ -368,18 +368,18 @@ The reversible white gold case, adorned with a hand-guilloché hobnail pattern, 
 
 The centerpiece—a 42.5-carat cushion-cut Golconda diamond necklace named 'L'Éclat Céleste'—possesses a transparent, water-like luminosity that mesmerizes connoisseurs and museum curators alike.`,
     isFeatured: true,
-    tags: ['Cartier', 'High Jewelry', 'Diamonds', 'Paris'],
+    tags: ['Cartier', 'High Jewellery', 'Diamonds', 'Paris'],
     viewsCount: 11200
   },
   {
     id: 'art-wj-3',
     title: 'Richard Mille RM 27-05 Flying Tourbillon: Weighing Just 11.5 Grams Without Strap',
     slug: 'richard-mille-rm-27-05-tourbillon-review',
-    category: 'watches-jewelry',
+    category: 'watches-jewellery',
     coverImage: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?q=80&w=1600&auto=format&fit=crop',
     author: {
       name: 'CITY TALKZ Editorial Bureau',
-      role: 'Horology & High Jewelry Press Desk',
+      role: 'Horology & High Jewellery Press Desk',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=300&auto=format&fit=crop'
     },
     publishDate: 'July 12, 2026',
